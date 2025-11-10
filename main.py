@@ -83,10 +83,13 @@ class Hero:
         for p in platforms:
             if self.actor.colliderect(p.rect):
                 # pouso
-                if self.vel_y > 0 and old_bottom <= p.rect.top:
-                    self.actor.bottom = p.rect.top
+                if (self.vel_y > 0 and
+                        old_top <= p.rect.top and
+                        self.actor.bottom >= p.rect.top):
+                    self.actor.y = p.rect.top - self.actor.height / 2
                     self.vel_y = 0
                     self.on_ground = True
+                    break
                 # bateu cabeça no "teto"
                 elif self.vel_y < 0 and old_top >= p.rect.bottom:
                     self.actor.top = p.rect.bottom
@@ -199,4 +202,3 @@ def draw():
 
 
 pgzrun.go()
-git reset --soft HEAD~1
