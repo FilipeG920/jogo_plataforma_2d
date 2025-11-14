@@ -50,6 +50,22 @@ class Hero:
         self.facing = 1
         self.moving = False
 
+    def _touching_ground(self, platforms):
+        """Retorna True se o herói estiver alinhado ao topo de uma plataforma."""
+        if self.vel_y < 0:
+            return False
+
+        for p in platforms:
+            horizontal_overlap = (
+                self.actor.right > p.rect.left + 1 and
+                self.actor.left < p.rect.right - 1
+            )
+            close_to_top = abs(self.actor.bottom - p.rect.top) <= 1
+
+            if horizontal_overlap and close_to_top:
+                return True
+        return False
+
     def update(self, platforms):
         # ---- MOVIMENTO HORIZONTAL ----
         old_x = self.actor.x
@@ -87,6 +103,9 @@ class Hero:
                 elif self.vel_y < 0 and old_top >= p.rect.bottom:
                     self.actor.top = p.rect.bottom
                     self.vel_y = 0
+
+        if not self.on_ground:
+            self.on_ground = self._touching_ground(platforms)
 
         # colisão lateral (executada após correção vertical)
         moved_horizontally = self.actor.x != old_x
