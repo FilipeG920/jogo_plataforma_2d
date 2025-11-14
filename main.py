@@ -63,16 +63,6 @@ class Hero:
             self.facing = 1
             self.moving = True
 
-        # colisão lateral (ignora "apenas encostado no topo")
-        for p in platforms:
-            if self.actor.colliderect(p.rect):
-                vertical_overlap = (self.actor.bottom > p.rect.top + 1) and (self.actor.top < p.rect.bottom - 1)
-                if vertical_overlap:
-                    if self.actor.x > old_x:      # movia para a direita
-                        self.actor.right = p.rect.left
-                    elif self.actor.x < old_x:    # movia para a esquerda
-                        self.actor.left = p.rect.right
-
         # ---- MOVIMENTO VERTICAL ----
         old_bottom = self.actor.bottom
         old_top = self.actor.top
@@ -97,6 +87,27 @@ class Hero:
                 elif self.vel_y < 0 and old_top >= p.rect.bottom:
                     self.actor.top = p.rect.bottom
                     self.vel_y = 0
+
+        # colisão lateral (executada após correção vertical)
+        moved_horizontally = self.actor.x != old_x
+        if moved_horizontally:
+            for p in platforms:
+                if not self.actor.colliderect(p.rect):
+                    continue
+
+                # só trata como colisão lateral se houver sobreposição real nas laterais
+                vertical_overlap = (
+                    self.actor.bottom > p.rect.top + 1 and
+                    self.actor.top < p.rect.bottom - 1
+                )
+
+                if not vertical_overlap:
+                    continue
+
+                if self.actor.x > old_x:      # movia para a direita
+                    self.actor.right = p.rect.left
+                elif self.actor.x < old_x:    # movia para a esquerda
+                    self.actor.left = p.rect.right
 
         self.animate()
 
