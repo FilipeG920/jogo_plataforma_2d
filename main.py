@@ -42,6 +42,7 @@ class Hero:
         self.walk_l = [f"alien_walk_left{i}" for i in range(1, 12)]
 
         self.actor = Actor(self.image_idle_r, (x, y))
+        self.pos_y = float(y)
         self.vel_y = 0.0
         self.on_ground = False
         self.anim_timer = 0
@@ -77,7 +78,8 @@ class Hero:
         old_top = self.actor.top
 
         self.vel_y += GRAVITY
-        self.actor.y += self.vel_y
+        self.pos_y += self.vel_y
+        self.actor.y = self.pos_y
 
         self.on_ground = False
         for p in platforms:
@@ -86,7 +88,8 @@ class Hero:
                 if (self.vel_y > 0 and
                         old_top <= p.rect.top and
                         self.actor.bottom >= p.rect.top):
-                    self.actor.y = p.rect.top - self.actor.height / 2
+                    self.pos_y = p.rect.top - self.actor.height / 2
+                    self.actor.y = self.pos_y
                     self.vel_y = 0
                     self.on_ground = True
                     break
@@ -104,6 +107,7 @@ class Hero:
 
     def respawn(self):
         self.actor.pos = (100, HEIGHT - 120)
+        self.pos_y = self.actor.y
         self.vel_y = 0
         self.on_ground = False
 
